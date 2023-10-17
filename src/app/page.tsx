@@ -1,5 +1,5 @@
-import CreateGame from "@/components/CreateGame";
 import Image from "next/image";
+import CreateGame from "./sections/CreateGame";
 
 export default function Home() {
   return (

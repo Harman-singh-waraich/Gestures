@@ -4,7 +4,8 @@ import { useGameDeploy } from "@/hooks/useContractDeploy";
 import { Move } from "@/types";
 import { isValidEthereumAddress } from "@/utils/helpers";
 import Image from "next/image";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 interface FormData {
   move: Move;
@@ -18,6 +19,7 @@ function CreateGame() {
   });
 
   const { deployContract, deployState } = useGameDeploy(formData);
+  const router = useRouter();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
@@ -39,6 +41,11 @@ function CreateGame() {
     console.log("Ethereum Address:", formData.partyAddress);
     deployContract!();
   };
+
+  useEffect(() => {
+    if (deployState?.contractAddress)
+      router.push(`/game?contractAddress=${deployState.contractAddress}`);
+  }, [deployState?.contractAddress]);
 
   return (
     <div className="w-full h-full flex flex-col items-center gap-5">

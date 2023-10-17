@@ -82,6 +82,31 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: "#fa7fa6",
+
+          secondary: "#fce2ab",
+
+          accent: "#d40848",
+
+          neutral: "#2a323c",
+
+          "base-100": "#1d232a",
+
+          info: "#3abff8",
+
+          success: "#36d399",
+
+          warning: "#fbbd23",
+
+          error: "#f87272",
+        },
+      },
+    ],
+  },
+  plugins: [require("daisyui")],
 };
 export default config;

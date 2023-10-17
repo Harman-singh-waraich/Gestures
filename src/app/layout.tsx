@@ -1,9 +1,9 @@
 import { WagmiProvider } from "@/config/WagmiProvider";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Dosis } from "next/font/google";
+import { Gluten } from "next/font/google";
 
-const dosis = Dosis({ subsets: ["latin"] });
+const gluten = Gluten({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "RPS Game",
@@ -17,9 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={dosis.className}>
+      <body className={gluten.className}>
         <WagmiProvider>
-          <div className="flex h-auto px-6 md:px-16 lg:px-40">{children}</div>
+          <div className="flex h-screen p-6 md:p-16 lg:px-40">{children}</div>
         </WagmiProvider>
       </body>
     </html>

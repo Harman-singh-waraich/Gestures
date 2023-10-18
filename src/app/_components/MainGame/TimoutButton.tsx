@@ -40,7 +40,7 @@ const TimeoutButton = ({ gameData }: Props) => {
 
   const handleSubmit = useCallback(() => {
     if (timeLeft > 0) return;
-    if (address === j1 && hasJ2TimedOut(gameData)) J1Timeout?.();
+    if (address === j1 && hasJ2TimedOut(gameData)) J2Timeout?.();
     if (address === j2 && hasJ1TimedOut(gameData)) J2Timeout?.();
   }, [lastAction]);
 

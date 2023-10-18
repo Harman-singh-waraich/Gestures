@@ -24,6 +24,9 @@ const J2page = ({ gameData }: Props) => {
 
       trackTxn(data?.hash);
     },
+    onError(err) {
+      console.log(err);
+    },
     onSettled() {},
   });
 
@@ -34,15 +37,14 @@ const J2page = ({ gameData }: Props) => {
   };
 
   const handleSubmit = useCallback(
-    () =>
-      (event: FormEvent<HTMLFormElement>): void => {
-        event.preventDefault();
-        if (selectedMove === Move.Null) return;
+    (event: FormEvent<HTMLFormElement>): void => {
+      event.preventDefault();
+      if (selectedMove === Move.Null) return;
 
-        write?.({
-          args: [selectedMove],
-        });
-      },
+      write?.({
+        args: [selectedMove],
+      });
+    },
     [selectedMove]
   );
 

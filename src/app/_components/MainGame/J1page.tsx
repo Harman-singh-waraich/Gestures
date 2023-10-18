@@ -5,11 +5,12 @@ import { Move } from "@/app/_types";
 import React, { useCallback } from "react";
 import { useContractWrite } from "wagmi";
 import TimeoutButton from "./TimoutButton";
+import { getJ1PlayedMove } from "@/app/_utils/secureHash";
 
 type Props = { gameData: GameData };
 
 const J1page = ({ gameData }: Props) => {
-  const { j1, j2, c2, gameAddress } = gameData;
+  const { j1, j2, c2, gameAddress, c1Hash } = gameData;
   const { trackTxn } = useTrackTransaction();
   const { write, isLoading, isError, isSuccess } = useContractWrite({
     address: gameAddress,
@@ -22,11 +23,13 @@ const J1page = ({ gameData }: Props) => {
     },
     onSettled() {},
   });
-  const handleSubmit = useCallback(() => {
-    console.log("ran");
 
+  const handleSubmit = useCallback(async () => {
+    console.log("ran");
+    const encryptedSalt = localStorage.getItem("encryptedSalt");
+    const decrpytedValues = await getJ1PlayedMove(c1Hash, encryptedSalt!);
     write?.({
-      args: [1, BigInt("0x234")],
+      args: [decrpytedValues?.move!, decrpytedValues?.salt! as bigint],
     });
   }, [c2]);
 

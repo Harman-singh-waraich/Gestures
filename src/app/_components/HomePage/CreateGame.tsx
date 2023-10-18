@@ -10,17 +10,18 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 interface FormData {
   move: Move;
   partyAddress: string;
+  stakeAmount: string;
 }
 
 function CreateGame() {
   const [formData, setFormData] = useState<FormData>({
     move: Move.Null,
     partyAddress: "",
+    stakeAmount: "0",
   });
 
   const { deployContract, deployState } = useGameDeploy(formData);
   const router = useRouter();
-
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
 
@@ -39,6 +40,7 @@ function CreateGame() {
       return;
     console.log("Move:", formData.move);
     console.log("Ethereum Address:", formData.partyAddress);
+    console.log("stake:", formData.stakeAmount);
     deployContract!();
   };
 
@@ -98,6 +100,19 @@ function CreateGame() {
             placeholder="Enter here"
             name="partyAddress"
             value={formData.partyAddress}
+            onChange={handleChange}
+            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs`}
+          />
+        </div>
+        <div className="form-control w-full items-center">
+          <label className="label">
+            <span className="label-text text-gray-600">Enter stake amount</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Enter here"
+            name="stakeAmount"
+            value={formData.stakeAmount}
             onChange={handleChange}
             className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs`}
           />

@@ -10,6 +10,7 @@ export interface GameData {
   TIMEOUT: number | undefined;
   lastAction: number | undefined;
   stake: bigint | undefined;
+  c1Hash: string;
 }
 export const useContract = (address: `0x${string}`) => {
   const gameContract = {
@@ -46,6 +47,10 @@ export const useContract = (address: `0x${string}`) => {
         ...gameContract,
         functionName: "stake",
       },
+      {
+        ...gameContract,
+        functionName: "c1Hash",
+      },
     ],
     allowFailure: false,
     watch: true,
@@ -60,13 +65,10 @@ export const useContract = (address: `0x${string}`) => {
       lastAction: Number(data?.[3]),
       c2: data?.[4],
       stake: data?.[5],
+      c1Hash: data?.[6],
     };
   }, [data]);
 
-  const hasJ2TimedOut = useMemo(() => {}, [
-    prettyData.lastAction,
-    prettyData.c2,
-  ]);
   return {
     gameData: prettyData as GameData,
     isLoading,

@@ -1,17 +1,9 @@
 import { useState } from "react";
-import { getContractAddress, keccak256, toHex } from "viem";
+import { parseEther } from "viem";
 import { gameAbi, gameBytCode } from "@/app/_constants";
-import {
-  useAccount,
-  usePublicClient,
-  useWaitForTransaction,
-  useWalletClient,
-} from "wagmi";
+import { useAccount, useWaitForTransaction, useWalletClient } from "wagmi";
 import { Move } from "@/app/_types";
-import { useTrackTransaction } from "@/app/_providers/TrackTxnProvider";
-import { getTransaction } from "viem/actions";
-var bcrypt = require("bcryptjs");
-const Cryptr = require("cryptr");
+import { hashMove } from "../_utils/secureHash";
 
 export type DeployState = {
   hash: `0x${string}` | undefined;
@@ -26,11 +18,11 @@ export type DeployState = {
 interface GameConstructorArgs {
   move: Move;
   partyAddress: string;
+  stakeAmount: string;
 }
-const cryptr = new Cryptr("myTotallySecretKey");
 
 export function useGameDeploy(params: GameConstructorArgs) {
-  const { move, partyAddress } = params;
+  const { move, partyAddress, stakeAmount } = params;
 
   const [deployState, setDeployState] = useState<DeployState>({
     hash: undefined,
@@ -45,17 +37,6 @@ export function useGameDeploy(params: GameConstructorArgs) {
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
 
-  //   const salt = toHex(bcrypt.genSaltSync(10));
-  //   console.log(salt);
-  //   const hashedMove = keccak256(
-  //     (toHex(move) + salt) as `0x${string}`
-  //   ).toString();
-  //   console.log(move, hashedMove);
-
-  //   const encryptedSalt = cryptr.encrypt(salt);
-
-  //   localStorage.setItem("encrypted_salt", encryptedSalt);
-
   const deployContract = async () => {
     try {
       setDeployState({
@@ -63,15 +44,17 @@ export function useGameDeploy(params: GameConstructorArgs) {
         status: "loading",
         isLoading: true,
       });
+      const { hashedMove, encryptedSalt } = await hashMove(move);
+      console.log(hashedMove, encryptedSalt);
 
+      //its encrypted so safe to store
+      localStorage.setItem("encryptedSalt", encryptedSalt);
       const deployHash = await walletClient?.deployContract({
         abi: gameAbi,
         account: address,
         bytecode: gameBytCode,
-        args: [
-          "0xe79edaced4f7c071162aa281d7ec9a3952be2cadaf4fda1ecad274f7efb1efcd", //TODO : remove hardcoding
-          partyAddress as `0x${string}`,
-        ],
+        args: [hashedMove, partyAddress as `0x${string}`],
+        value: parseEther(stakeAmount),
       });
 
       setDeployState({

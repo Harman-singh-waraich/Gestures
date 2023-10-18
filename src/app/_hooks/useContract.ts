@@ -1,8 +1,17 @@
 import { gameAbi } from "@/app/_constants";
 import { useMemo } from "react";
 import { useContractReads } from "wagmi";
-
-export const useContract = (address: string) => {
+import { Move } from "../_types";
+export interface GameData {
+  gameAddress: `0x${string}` | undefined;
+  j1: `0x${string}` | undefined;
+  j2: `0x${string}` | undefined;
+  c2: Move;
+  TIMEOUT: number | undefined;
+  lastAction: number | undefined;
+  stake: bigint | undefined;
+}
+export const useContract = (address: `0x${string}`) => {
   const gameContract = {
     abi: gameAbi,
     address: address as `0x${string}`,
@@ -32,6 +41,11 @@ export const useContract = (address: string) => {
         ...gameContract,
         functionName: "c2",
       },
+
+      {
+        ...gameContract,
+        functionName: "stake",
+      },
     ],
     allowFailure: false,
     watch: true,
@@ -39,16 +53,22 @@ export const useContract = (address: string) => {
 
   const prettyData = useMemo(() => {
     return {
+      gameAddress: address,
       j1: data?.[0],
       j2: data?.[1],
-      TIMEOUT: data?.[2],
-      lastAction: data?.[3],
+      TIMEOUT: Number(data?.[2]),
+      lastAction: Number(data?.[3]),
       c2: data?.[4],
+      stake: data?.[5],
     };
   }, [data]);
 
+  const hasJ2TimedOut = useMemo(() => {}, [
+    prettyData.lastAction,
+    prettyData.c2,
+  ]);
   return {
-    ...prettyData,
+    gameData: prettyData as GameData,
     isLoading,
   };
 };

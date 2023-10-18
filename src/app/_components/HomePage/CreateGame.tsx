@@ -72,8 +72,8 @@ function CreateGame() {
                       className="hidden"
                     />
                     <div
-                      className={`w-20 h-20 btn btn-circle btn-outline rounded-full border-2 relative ${
-                        formData.move === index ? "btn-active" : ""
+                      className={`w-20 h-20 btn btn-circle btn-outline  hover:bg-primary-content rounded-full border-2 relative ${
+                        formData.move === index ? "bg-secondary-content" : ""
                       }`}
                     >
                       <Image

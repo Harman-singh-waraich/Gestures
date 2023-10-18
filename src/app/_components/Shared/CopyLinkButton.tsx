@@ -20,7 +20,7 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({ link }) => {
   return (
     <div className="join">
       <input
-        className="join-item input input-primary input-bordered bg-transparent text-gray-600"
+        className="join-item input input-bordered input-disabled focus:outline-none bg-transparent text-gray-600 max-w-xs"
         id="linkInput"
         type="text"
         value={link}

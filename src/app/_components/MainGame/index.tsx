@@ -4,15 +4,16 @@ import { useIsMounted } from "@/app/_hooks/useIsMounted";
 import React from "react";
 import CopyLinkButton from "../Shared/CopyLinkButton";
 import { useAccount } from "wagmi";
+import GameInfo from "./GameInfo";
+import J1page from "./J1page";
+import J2page from "./J2page";
 
 interface Props {
   address: string;
 }
 
 const MainGame = ({ address: gameAddress }: Props) => {
-  const { j1, j2, c2, TIMEOUT, lastAction, isLoading } = useContract(
-    gameAddress!
-  );
+  const { gameData, isLoading } = useContract(gameAddress! as `0x${string}`);
   const { address: account, isDisconnected } = useAccount();
 
   const isMounted = useIsMounted();
@@ -28,19 +29,11 @@ const MainGame = ({ address: gameAddress }: Props) => {
 
   return (
     <div className="w-full h-full flex flex-col ">
-      <div className="text-gray-600 text-xl md:text-3xl">
-        Live Game :- {gameAddress}
-      </div>
-      <div>
-        <span className="text-gray-400 py-2">
-          Share this link with the other party.
-        </span>
-        <CopyLinkButton link={`https://localhost:3000/game/${gameAddress}`} />
-      </div>
-      {account === j1 ? (
-        <div>j1's page</div>
-      ) : account === j2 ? (
-        <div>j2's page</div>
+      <GameInfo gameData={gameData} />
+      {account === gameData.j1 ? (
+        <J1page gameData={gameData} />
+      ) : account === gameData.j2 ? (
+        <J2page gameData={gameData} />
       ) : (
         <div>Your not a part of the game</div>
       )}

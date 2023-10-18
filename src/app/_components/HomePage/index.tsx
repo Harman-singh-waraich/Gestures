@@ -35,7 +35,7 @@ function HomePage() {
           ck
         </span>
       </div>
-      <div className=" w-full h-auto flex flex-col items-center justify-center border border-text-900 bg-[#c0e5da] rounded-lg p-4 m-8">
+      <div className=" w-full h-auto flex flex-col items-center justify-center  bg-base-200 rounded-lg p-4 m-8">
         <CreateGame />
       </div>
 

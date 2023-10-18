@@ -1,7 +1,8 @@
 import Image from "next/image";
-import CreateGame from "./sections/CreateGame";
+import React from "react";
+import CreateGame from "./CreateGame";
 
-export default function Home() {
+function HomePage() {
   return (
     <main className="flex h-full w-full flex-col items-center justify-start ">
       <div className=" flex flex-wrap items-center justify-center gap-4 text-3xl md:text-7xl text-text-900 font-medium text-center m-4">
@@ -42,3 +43,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default HomePage;

@@ -1,8 +1,8 @@
-import { WagmiProvider } from "@/config/WagmiProvider";
-import "./globals.css";
+import { WagmiProvider } from "@/app/_providers/WagmiProvider";
+import "../globals.css";
 import type { Metadata } from "next";
 import { Gluten } from "next/font/google";
-import { TrackTxnProvider } from "@/config/TrackTxnProvider";
+import { TrackTxnProvider } from "@/app/_providers/TrackTxnProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const gluten = Gluten({ subsets: ["latin"] });

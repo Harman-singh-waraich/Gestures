@@ -1,8 +1,8 @@
 "use client";
-import CopyLinkButton from "@/components/CopyLinkButton";
-import { useGameDeploy } from "@/hooks/useContractDeploy";
-import { Move } from "@/types";
-import { isValidEthereumAddress } from "@/utils/helpers";
+import CopyLinkButton from "@/app/_components/Shared/CopyLinkButton";
+import { useGameDeploy } from "@/app/_hooks/useContractDeploy";
+import { Move } from "@/app/_types";
+import { isValidEthereumAddress } from "@/app/_utils/helpers";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -44,7 +44,7 @@ function CreateGame() {
 
   useEffect(() => {
     if (deployState?.contractAddress)
-      router.push(`/game?contractAddress=${deployState.contractAddress}`);
+      router.push(`/game/${deployState.contractAddress}`);
   }, [deployState?.contractAddress]);
 
   return (
@@ -104,17 +104,28 @@ function CreateGame() {
         </div>
 
         <div className="w-full flex items-center justify-center my-1">
-          <button type="submit" className="btn btn-accent ">
-            Create
+          <button
+            type="submit"
+            disabled={deployState.isLoading}
+            className="btn btn-accent "
+          >
+            {deployState.isLoading ? (
+              <>
+                Deploying
+                <span className="loading loading-dots loading-sm"></span>
+              </>
+            ) : (
+              "Create"
+            )}
           </button>
         </div>
       </form>
 
-      {
+      {deployState?.contractAddress && (
         <CopyLinkButton
           link={`https://localhost:3000?contractAddress=${deployState?.contractAddress}`}
         />
-      }
+      )}
     </div>
   );
 }

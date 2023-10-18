@@ -1,19 +1,25 @@
 import { useState } from "react";
 import { getContractAddress, keccak256, toHex } from "viem";
-import { gameAbi, gameBytCode } from "@/constants";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { Move } from "@/types";
-import { useTrackTransaction } from "@/config/TrackTxnProvider";
+import { gameAbi, gameBytCode } from "@/app/_constants";
+import {
+  useAccount,
+  usePublicClient,
+  useWaitForTransaction,
+  useWalletClient,
+} from "wagmi";
+import { Move } from "@/app/_types";
+import { useTrackTransaction } from "@/app/_providers/TrackTxnProvider";
+import { getTransaction } from "viem/actions";
 var bcrypt = require("bcryptjs");
 const Cryptr = require("cryptr");
 
 export type DeployState = {
-  hash: string | undefined;
-  status: "idle" | "error" | "loading" | "success"; // success here means deployment txn has been submitted
+  hash: `0x${string}` | undefined;
+  status: "idle" | "error" | "loading" | "success" | "submitted"; // success here means deployment txn has been submitted
   isLoading: boolean;
   isError: boolean;
   isSuccess: boolean;
-  contractAddress: string | undefined;
+  contractAddress: `0x${string}` | null;
   error: null | string;
 };
 
@@ -32,13 +38,11 @@ export function useGameDeploy(params: GameConstructorArgs) {
     isLoading: false,
     isError: false,
     isSuccess: false,
-    contractAddress: undefined,
+    contractAddress: null,
     error: null,
   });
 
   const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
-  const { trackTxn } = useTrackTransaction();
   const { address } = useAccount();
 
   //   const salt = toHex(bcrypt.genSaltSync(10));
@@ -69,26 +73,12 @@ export function useGameDeploy(params: GameConstructorArgs) {
           partyAddress as `0x${string}`,
         ],
       });
-      trackTxn(deployHash);
-
-      const nonce = await publicClient.getTransactionCount({
-        address: address!,
-      });
-
-      //deduce contract address
-      const deployedContract = getContractAddress({
-        from: address!,
-        nonce: BigInt(nonce),
-      });
-      console.log(deployedContract);
 
       setDeployState({
+        ...deployState,
         hash: deployHash,
-        status: "success",
-        isLoading: false,
-        isError: false,
-        isSuccess: true,
-        contractAddress: deployedContract,
+        status: "submitted",
+        isLoading: true,
         error: null,
       });
     } catch (error: any) {
@@ -105,9 +95,25 @@ export function useGameDeploy(params: GameConstructorArgs) {
     }
   };
 
+  useWaitForTransaction({
+    hash: deployState.hash,
+    onSettled: (data, error) => {
+      console.log(data);
+
+      setDeployState({
+        ...deployState,
+        hash: undefined,
+        isSuccess: true,
+        status: "success",
+        isLoading: false,
+        contractAddress: data?.contractAddress!,
+        error: null,
+      });
+    },
+  });
+
   return {
     deployState,
     deployContract,
   };
-  return {};
 }

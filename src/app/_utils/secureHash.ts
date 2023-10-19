@@ -40,8 +40,6 @@ export const getJ1PlayedMove = async (
       const encoded = encodePacked(["uint8", "uint256"], [move, salt]);
       const hashedMove = keccak256(encoded);
 
-      console.log({ move, hashedMove, salt });
-
       if (hashedMove === c1hash) return { move: move, salt: BigInt(salt) };
     }
   }

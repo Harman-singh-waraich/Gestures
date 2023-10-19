@@ -66,7 +66,7 @@ const J2page = ({ gameData }: Props) => {
 
   return (
     <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between">
-      <div className="flex flex-col gap-3 items-center border-b border-black md:border-none py-2">
+      <div className="flex flex-col gap-4 items-center border-b border-black md:border-none py-2">
         {c2 === Move.Null ? (
           // select move form
           <form
@@ -95,7 +95,7 @@ const J2page = ({ gameData }: Props) => {
         )}
       </div>
       {/* opponent side */}
-      <div className="flex flex-col gap-3 items-center py-2">
+      <div className="flex flex-col gap-4 items-center py-2">
         {c2 == Move.Null ? (
           //waiting for j2 to play
           <div className="text-neutral text-center">

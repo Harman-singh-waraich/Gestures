@@ -23,7 +23,6 @@ export const TrackTxnProvider: React.FC<TrackTxnProviderProps> = ({
 
   const trackTxn = (hash: Hash | undefined) => {
     setHash(hash);
-    console.log(hash);
 
     toast.loading("Transacion Submitted!", toastConfig);
   };

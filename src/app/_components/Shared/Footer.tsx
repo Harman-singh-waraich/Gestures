@@ -6,8 +6,8 @@ type Props = {};
 
 const Footer = (props: Props) => {
   return (
-    <footer className="footer items-center p-2 px-2 md:px-16 bg-gray-100 text-neutral md:fixed bottom-0 left-0">
-      <aside className="items-center grid-flow-col">
+    <footer className="footer items-center p-2 px-2 md:px-16 bg-gray-300 text-neutral md:fixed bottom-0 left-0">
+      <aside className="text-neutral items-center grid-flow-col">
         <p>Made with ♡ by @turbancoder</p>
       </aside>
       <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">

@@ -114,7 +114,6 @@ export const useContract = (address: `0x${string}`) => {
 
                 setRevealFound(true);
                 setC1(args?.[0] as Move);
-                console.log(functionName, args);
 
                 break;
               }

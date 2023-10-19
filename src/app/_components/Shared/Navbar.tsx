@@ -9,7 +9,7 @@ const Navbar = () => {
           href={"/"}
           className="btn btn-ghost normal-case text-xl md:text-2xl"
         >
-          Gesture
+          Gestures
         </Link>
       </div>
 

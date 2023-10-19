@@ -36,7 +36,7 @@ const J1page = ({ gameData }: Props) => {
   return (
     <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between my-4">
       {/* player 1 side */}
-      <div className="flex flex-col gap-3 items-center border-b border-black md:border-none py-2">
+      <div className="flex flex-col gap-4 items-center border-b border-black md:border-none py-2">
         {isRevealed ? `You played ${Move[c1]}` : "You have played your move"}
 
         <MoveIcon
@@ -50,7 +50,7 @@ const J1page = ({ gameData }: Props) => {
       </div>
 
       {/* player 2 side */}
-      <div className="flex flex-col gap-3 items-center py-2">
+      <div className="flex flex-col gap-4 items-center py-2">
         {c2 == Move.Null ? (
           // opponent has not played yet
           <>
@@ -59,7 +59,7 @@ const J1page = ({ gameData }: Props) => {
           </>
         ) : (
           //opponent played
-          <div className="flex flex-col-reverse md:flex-col items-center gap-1">
+          <div className="flex flex-col-reverse gap-3 md:flex-col items-center">
             {" "}
             <span className="text-neutral">Opponent played {Move[c2]}</span>
             <MoveIcon

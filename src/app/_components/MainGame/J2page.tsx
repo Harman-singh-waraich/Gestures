@@ -2,19 +2,25 @@ import { gameAbi } from "@/app/_constants";
 import { GameData } from "@/app/_hooks/useContract";
 import { useTrackTransaction } from "@/app/_providers/TrackTxnProvider";
 import { Move } from "@/app/_types";
+import { hasJ1TimedOut, hasJ2TimedOut } from "@/app/_utils/helpers";
 import Image from "next/image";
-import React, { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useContractWrite } from "wagmi";
-import TimeoutButton from "./TimoutButton";
 
 type Props = { gameData: GameData };
 
 const J2page = ({ gameData }: Props) => {
-  const { j1, j2, c2, gameAddress, stake } = gameData;
+  const { c2, gameAddress, stake } = gameData;
   const [selectedMove, setMove] = useState<Move>(Move.Null);
   const { trackTxn } = useTrackTransaction();
 
-  const { write, isLoading, isError, isSuccess } = useContractWrite({
+  const { write, isLoading } = useContractWrite({
     address: gameAddress,
     abi: gameAbi,
     functionName: "play",
@@ -27,9 +33,15 @@ const J2page = ({ gameData }: Props) => {
     onError(err) {
       console.log(err);
     },
-    onSettled() {},
   });
-
+  const isDisabled = useMemo(
+    () =>
+      selectedMove === Move.Null ||
+      isLoading ||
+      hasJ2TimedOut(gameData) ||
+      hasJ1TimedOut(gameData),
+    [isLoading, selectedMove]
+  );
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { value } = event.target;
 
@@ -50,14 +62,13 @@ const J2page = ({ gameData }: Props) => {
 
   return (
     <div className="w-full flex flex-col md:flex-row items-center justify-start md:justify-between">
-      <div className="flex flex-col gap-3">
-        {j2}
-        <TimeoutButton gameData={gameData} />
+      <div className="flex flex-col gap-3 items-center">
         {c2 == Move.Null ? (
           <form
             className="flex flex-col gap-3 items-center"
             onSubmit={handleSubmit}
           >
+            <span className="text-neutral">Play your move</span>
             <div className="flex flex-wrap gap-3 items-center">
               {Object.keys(Move)
                 .filter((key: any) => isNaN(Number(Move[key])))
@@ -93,21 +104,32 @@ const J2page = ({ gameData }: Props) => {
             <button
               type="submit"
               className="btn btn-accent "
-              disabled={selectedMove === Move.Null}
+              disabled={isDisabled}
             >
               Play
             </button>
           </form>
         ) : (
-          <div>Waiting for opponent to reveal his move.</div>
+          <>
+            <span>{`You played ${Move[c2]}`}</span>
+            <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
+              <Image
+                src={`/assets/${Move[c2].toLowerCase()}.svg`}
+                alt={Move[c2].toLowerCase()}
+                fill={true}
+              />
+            </span>
+          </>
         )}
       </div>
-      <div className="flex flex-col gap-3">
-        {j1}
+      <div className="flex flex-col gap-3 items-center">
         {c2 == Move.Null ? (
           <div>Opponent has played his move. Play yours now</div>
         ) : (
-          <div>Waiting for opponent to reveal his move</div>
+          <>
+            <div className=" text-neutral">Waiting for opponent's move</div>
+            <span className="loading loading-dots loading-md"></span>
+          </>
         )}
       </div>
     </div>

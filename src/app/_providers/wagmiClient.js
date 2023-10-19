@@ -27,8 +27,8 @@ createWeb3Modal({
   chains,
   themeMode: "light",
   themeVariables: {
-    "--w3m-color-mix": "#fcb5cc",
-    "--w3m-color-mix-strength": 40,
+    "--w3m-color-mix": "#000",
+    "--w3m-color-mix-strength": 20,
     "--w3m-accent": "#d40848",
   },
 });

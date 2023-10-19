@@ -2,17 +2,20 @@ import { gameAbi } from "@/app/_constants";
 import { GameData } from "@/app/_hooks/useContract";
 import { useTrackTransaction } from "@/app/_providers/TrackTxnProvider";
 import { Move } from "@/app/_types";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useContractWrite } from "wagmi";
 import TimeoutButton from "./TimoutButton";
 import { getJ1PlayedMove } from "@/app/_utils/secureHash";
+import Image from "next/image";
 
 type Props = { gameData: GameData };
 
 const J1page = ({ gameData }: Props) => {
   const { j1, j2, c2, gameAddress, c1Hash } = gameData;
   const { trackTxn } = useTrackTransaction();
-  const { write, isLoading, isError, isSuccess } = useContractWrite({
+  const [c1, setC1] = useState<Move>(Move.Null);
+
+  const { write, isLoading } = useContractWrite({
     address: gameAddress,
     abi: gameAbi,
     functionName: "solve",
@@ -21,35 +24,63 @@ const J1page = ({ gameData }: Props) => {
 
       trackTxn(data?.hash);
     },
-    onSettled() {},
   });
+  const isDisabled = useMemo(() => c2 === Move.Null, [c2]);
+  const isRevealed = useMemo(() => c1 !== Move.Null, [c1]);
+  console.log(c1, isRevealed);
 
   const handleSubmit = useCallback(async () => {
-    console.log("ran");
     const encryptedSalt = localStorage.getItem("encryptedSalt");
     const decrpytedValues = await getJ1PlayedMove(c1Hash, encryptedSalt!);
+
+    setC1(decrpytedValues?.move! as Move);
+
     write?.({
       args: [decrpytedValues?.move!, decrpytedValues?.salt! as bigint],
     });
   }, [c2]);
 
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-start md:justify-between">
-      <div className="flex flex-col gap-3">
-        {j1}
-        <button className="btn" onClick={handleSubmit}>
-          Reveal
+    <div className="w-full flex flex-col md:flex-row items-center justify-start md:justify-between my-4">
+      <div className="flex flex-col gap-3 items-center">
+        {isRevealed ? `You played ${Move[c1]}` : "You have played your move"}
+        <button
+          className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative "
+          disabled={isDisabled || isRevealed}
+          onClick={handleSubmit}
+        >
+          <Image
+            src={`/assets/${
+              isRevealed ? Move[c1].toLowerCase() : "question"
+            }.svg`}
+            alt={"move"}
+            fill={true}
+          />
         </button>
-        <TimeoutButton gameData={gameData} />
+        {!isDisabled && "Reveal your move now"}
       </div>
-      <div className="flex flex-col gap-3">
-        {j2}
+      <div className="flex flex-col gap-3 items-center">
         {c2 == Move.Null ? (
-          <div>Waiting for opponent's move</div>
+          <>
+            <div className=" text-neutral">Waiting for opponent's move</div>
+            <span className="loading loading-dots loading-md"></span>
+          </>
         ) : (
-          <div>
+          <div className="flex flex-col items-center gap-1">
             {" "}
-            Opponent played {Move[c2]} You have to reveal your move now.
+            <span className="text-neutral">Opponent played {Move[c2]}</span>
+            <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
+              <Image
+                src={`/assets/${Move[c2].toLowerCase()}.svg`}
+                alt={Move[c2].toLowerCase()}
+                fill={true}
+              />
+            </span>
+            {isRevealed && (
+              <span className="text-neutral">
+                You have to reveal your move now.
+              </span>
+            )}
           </div>
         )}
       </div>

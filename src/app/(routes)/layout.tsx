@@ -5,6 +5,8 @@ import { Gluten } from "next/font/google";
 import { TrackTxnProvider } from "@/app/_providers/TrackTxnProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Navbar from "../_components/Shared/Navbar";
+import Footer from "../_components/Shared/Footer";
 const gluten = Gluten({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -22,7 +24,9 @@ export default function RootLayout({
       <body className={gluten.className}>
         <WagmiProvider>
           <TrackTxnProvider>
-            <div className="flex h-screen p-6 md:p-16 lg:px-40">{children}</div>
+            <Navbar />
+            <div className="flex h-auto  min-h-screen w-full">{children}</div>
+            <Footer />
           </TrackTxnProvider>
         </WagmiProvider>
         <ToastContainer

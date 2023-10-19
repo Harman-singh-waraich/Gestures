@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import GameInfo from "./GameInfo";
 import J1page from "./J1page";
 import J2page from "./J2page";
+import TimeoutButton from "./TimoutButton";
 
 interface Props {
   address: string;
@@ -28,7 +29,7 @@ const MainGame = ({ address: gameAddress }: Props) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col ">
+    <div className="w-full h-screen flex flex-col items-center justify-around gap-5 p-32 ">
       <GameInfo gameData={gameData} />
       {account === gameData.j1 ? (
         <J1page gameData={gameData} />
@@ -37,6 +38,7 @@ const MainGame = ({ address: gameAddress }: Props) => {
       ) : (
         <div>Your not a part of the game</div>
       )}
+      <TimeoutButton gameData={gameData} />
     </div>
   );
 };

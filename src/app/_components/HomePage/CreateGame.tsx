@@ -1,11 +1,17 @@
 "use client";
-import CopyLinkButton from "@/app/_components/Shared/CopyLinkButton";
 import { useGameDeploy } from "@/app/_hooks/useContractDeploy";
 import { Move } from "@/app/_types";
 import { isValidEthereumAddress } from "@/app/_utils/helpers";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useAccount } from "wagmi";
 
 interface FormData {
   move: Move;
@@ -22,6 +28,22 @@ function CreateGame() {
 
   const { deployContract, deployState } = useGameDeploy(formData);
   const router = useRouter();
+  const { isDisconnected } = useAccount();
+
+  //check for button state
+  const isButtonDisabled = useMemo(() => {
+    console.log(isDisconnected, formData);
+
+    if (isDisconnected) return true;
+    if (
+      formData.move === Move.Null ||
+      !isValidEthereumAddress(formData.partyAddress)
+    )
+      return true;
+    if (deployState.isLoading) return true;
+  }, [isDisconnected, formData, deployState]);
+
+  //handlers
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
 
@@ -44,18 +66,22 @@ function CreateGame() {
     deployContract!();
   };
 
+  //once contract address available , route the deployer to the live game
   useEffect(() => {
     if (deployState?.contractAddress)
       router.push(`/game/${deployState.contractAddress}`);
   }, [deployState?.contractAddress]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center gap-5">
-      <form onSubmit={handleSubmit}>
-        <div className="text-xl md:text-2xl text-gray-700 font-medium my-3 text-center">
-          Create a Game
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full h-screen flex flex-col items-center  gap-5 pt-40"
+      >
+        <div className="text-3xl md:text-6xl text-secondary font-medium my-3 text-center">
+          Pick your move
         </div>
-        <div className="text-gray-600 my-1 text-center">Pick a move</div>
+
         <div className="flex flex-wrap gap-3 items-center">
           {Object.keys(Move)
             .filter((key: any) => isNaN(Number(Move[key])))
@@ -74,7 +100,7 @@ function CreateGame() {
                       className="hidden"
                     />
                     <div
-                      className={`w-20 h-20 btn btn-circle btn-outline  hover:bg-primary-content rounded-full border-2 relative ${
+                      className={` w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline  hover:bg-primary-content rounded-full border-2 relative ${
                         formData.move === index ? "bg-secondary-content" : ""
                       }`}
                     >
@@ -101,7 +127,7 @@ function CreateGame() {
             name="partyAddress"
             value={formData.partyAddress}
             onChange={handleChange}
-            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs`}
+            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-md`}
           />
         </div>
         <div className="form-control w-full items-center">
@@ -114,14 +140,14 @@ function CreateGame() {
             name="stakeAmount"
             value={formData.stakeAmount}
             onChange={handleChange}
-            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs`}
+            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-md`}
           />
         </div>
 
         <div className="w-full flex items-center justify-center my-1">
           <button
             type="submit"
-            disabled={deployState.isLoading}
+            disabled={isButtonDisabled}
             className="btn btn-accent "
           >
             {deployState.isLoading ? (
@@ -135,13 +161,7 @@ function CreateGame() {
           </button>
         </div>
       </form>
-
-      {deployState?.contractAddress && (
-        <CopyLinkButton
-          link={`https://localhost:3000?contractAddress=${deployState?.contractAddress}`}
-        />
-      )}
-    </div>
+    </>
   );
 }
 

@@ -24,7 +24,7 @@ const Footer = (props: Props) => {
           />
         </Link>
         <Link
-          href={`https://twitter.com/notifications`}
+          href={`https://twitter.com/TurbanCoder`}
           target="_blank"
           className="w-7 md:w-8 h-7 md:h-8 cursor-pointer   relative hover:scale-105"
         >

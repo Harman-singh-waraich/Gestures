@@ -10,10 +10,10 @@ const HowToPlay = () => {
         <div>Rock crushes Scissors</div>
         <div>Scissors cuts Paper</div>
         <div>Paper covers Rock</div>
-        <div>Rock crushes divzard</div>
+        <div>Rock crushes Lzard</div>
         <div>Lizard poisons Spock</div>
         <div>Spock smashes Scissors</div>
-        <div>Scissors decapitates divzard</div>
+        <div>Scissors decapitates Lizard</div>
         <div>Lizard eats Paper</div>
         <div>Paper disproves Spock</div>
         <div>Spock vaporizes Rock</div>

@@ -27,7 +27,7 @@ While deploying the Game Contract, we have to pass in a hash of Player 1's move,
 now we generate the hash using this function in server side.
 The function generates a random salt, hashes the move with it.
 
-https://github.com/Harman-singh-waraich/Gestures/blob/a3aa291843b492a3b20a476fa7b5c005d5b1b6c9/src/app/_utils/secureHash.ts#L6C1-L16C3
+https://github.com/Harman-singh-waraich/Gestures/blob/9f993240ddd7e81fdf2b93dabdd44e793bfd9083/src/app/_utils/secureHash.ts#L6-L16
 
 Then we encrypt the salt and send it back on client side with the hashed move.
 The encrypted salt is saved in local storage for now, which is used later in game when revealing Player 1's move.
@@ -61,7 +61,7 @@ So now we just find that txn and decode the input to get the **c1** move and upd
 
 <br/>
 here's the code snippet that finds the **solve** txn.
-https://github.com/Harman-singh-waraich/Gestures/blob/a3aa291843b492a3b20a476fa7b5c005d5b1b6c9/src/app/_hooks/useContract.ts#L98C1-L124C27
+https://github.com/Harman-singh-waraich/Gestures/blob/a3aa291843b492a3b20a476fa7b5c005d5b1b6c9/src/app/_hooks/useContract.ts#L98-L124
 
 <br/>
 

@@ -45,10 +45,10 @@ export function useGameDeploy(params: GameConstructorArgs) {
         isLoading: true,
       });
       const { hashedMove, encryptedSalt } = await hashMove(move);
-      console.log(hashedMove, encryptedSalt);
 
       //its encrypted so safe to store
       localStorage.setItem("encryptedSalt", encryptedSalt);
+
       const deployHash = await walletClient?.deployContract({
         abi: gameAbi,
         account: address,
@@ -81,8 +81,6 @@ export function useGameDeploy(params: GameConstructorArgs) {
   useWaitForTransaction({
     hash: deployState.hash,
     onSettled: (data, error) => {
-      console.log(data);
-
       setDeployState({
         ...deployState,
         hash: undefined,

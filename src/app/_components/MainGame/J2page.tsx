@@ -12,6 +12,8 @@ import React, {
   useState,
 } from "react";
 import { useContractWrite } from "wagmi";
+import MoveIcon from "../Shared/MoveIcon";
+import MoveSelector from "../Shared/MoveSelector";
 
 type Props = { gameData: GameData };
 
@@ -26,14 +28,14 @@ const J2page = ({ gameData }: Props) => {
     functionName: "play",
     value: stake,
     onSuccess(data) {
-      console.log(data?.hash);
-
       trackTxn(data?.hash);
     },
     onError(err) {
       console.log(err);
     },
   });
+
+  //is play button disabled
   const isDisabled = useMemo(
     () =>
       selectedMove === Move.Null ||
@@ -42,6 +44,8 @@ const J2page = ({ gameData }: Props) => {
       hasJ1TimedOut(gameData),
     [isLoading, selectedMove]
   );
+
+  //handlers
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { value } = event.target;
 
@@ -63,44 +67,15 @@ const J2page = ({ gameData }: Props) => {
   return (
     <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between">
       <div className="flex flex-col gap-3 items-center border-b border-black md:border-none py-2">
-        {c2 == Move.Null ? (
+        {c2 === Move.Null ? (
+          // select move form
           <form
             className="flex flex-col gap-3 items-center"
             onSubmit={handleSubmit}
           >
             <span className="text-neutral">Play your move</span>
-            <div className="flex flex-wrap gap-3 items-center">
-              {Object.keys(Move)
-                .filter((key: any) => isNaN(Number(Move[key])))
-
-                .map((key: any) => Move[key].toLowerCase())
-                .map(
-                  (move, index) =>
-                    index !== 0 && (
-                      <label key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          name="move"
-                          value={index}
-                          checked={index === selectedMove}
-                          onChange={handleChange}
-                          className="hidden"
-                        />
-                        <div
-                          className={` w-12 h-12 btn btn-circle btn-outline  hover:bg-primary-content rounded-full border-1 relative ${
-                            index === selectedMove ? "bg-primary-content" : ""
-                          }`}
-                        >
-                          <Image
-                            src={`/assets/${move}.svg`}
-                            alt={move}
-                            fill={true}
-                          />
-                        </div>
-                      </label>
-                    )
-                )}
-            </div>
+            {/* selector */}
+            <MoveSelector onChange={handleChange} selectedMove={selectedMove} />
             <button
               type="submit"
               className="btn btn-accent "
@@ -112,22 +87,22 @@ const J2page = ({ gameData }: Props) => {
         ) : (
           <>
             <span>{`You played ${Move[c2]}`}</span>
-            <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
-              <Image
-                src={`/assets/${Move[c2].toLowerCase()}.svg`}
-                alt={Move[c2].toLowerCase()}
-                fill={true}
-              />
-            </span>
+            <MoveIcon
+              moveType={Move[c2]}
+              extendClass=" bg-primary-content hover:bg-primary-content"
+            />
           </>
         )}
       </div>
+      {/* opponent side */}
       <div className="flex flex-col gap-3 items-center py-2">
         {c2 == Move.Null ? (
+          //waiting for j2 to play
           <div className="text-neutral text-center">
             Opponent has played his move. Play yours now
           </div>
         ) : c1 === Move.Null ? (
+          //waiting for j1 to reveal
           <>
             <div className=" text-neutral text-center">
               Waiting for opponent to reveal.
@@ -135,16 +110,14 @@ const J2page = ({ gameData }: Props) => {
             <span className="loading loading-dots loading-md"></span>
           </>
         ) : (
+          //game end
           <div className="flex flex-col-reverse md:flex-col items-center gap-1">
             {" "}
             <span className="text-neutral">Opponent played {Move[c1]}</span>
-            <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
-              <Image
-                src={`/assets/${Move[c1].toLowerCase()}.svg`}
-                alt={Move[c1].toLowerCase()}
-                fill={true}
-              />
-            </span>
+            <MoveIcon
+              moveType={Move[c1]}
+              extendClass=" bg-primary-content hover:bg-primary-content"
+            />
           </div>
         )}
       </div>

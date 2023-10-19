@@ -1,11 +1,5 @@
-import Image from "next/image";
 import React from "react";
-const Rock = () => (
-  <span className="flex">
-    R<Image src={"assets/rock.svg"} alt="rock" width={20} height={20} />
-    ck
-  </span>
-);
+
 const HowToPlay = () => {
   return (
     <div className="w-full min-h-screen flex flex-col gap-5 items-center pt-40 bg-[#E4D7B4]/50 order-1 md:-order-1">

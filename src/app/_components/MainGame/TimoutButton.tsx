@@ -1,15 +1,14 @@
 import { gameAbi } from "@/app/_constants";
 import { GameData } from "@/app/_hooks/useContract";
 import { hasJ1TimedOut, hasJ2TimedOut } from "@/app/_utils/helpers";
-import moment from "moment";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import Countdown from "react-countdown";
 import { useAccount, useContractWrite } from "wagmi";
 
 type Props = { gameData: GameData };
 
 const TimeoutButton = ({ gameData }: Props) => {
-  const { lastAction, TIMEOUT, j1, j2, c2, gameAddress } = gameData;
+  const { lastAction, TIMEOUT, j1, j2, gameAddress } = gameData;
   const { address } = useAccount();
 
   const timeLeft = (lastAction! + TIMEOUT!) * 1000 - Date.now();
@@ -32,6 +31,7 @@ const TimeoutButton = ({ gameData }: Props) => {
     abi: gameAbi,
     functionName: "j1Timeout",
   });
+
   const { write: J2Timeout } = useContractWrite({
     address: gameAddress,
     abi: gameAbi,
@@ -41,7 +41,7 @@ const TimeoutButton = ({ gameData }: Props) => {
   const handleSubmit = useCallback(() => {
     if (timeLeft > 0) return;
     if (address === j1 && hasJ2TimedOut(gameData)) J2Timeout?.();
-    if (address === j2 && hasJ1TimedOut(gameData)) J2Timeout?.();
+    if (address === j2 && hasJ1TimedOut(gameData)) J1Timeout?.();
   }, [lastAction]);
 
   return (

@@ -22,3 +22,29 @@ export const hasJ1TimedOut = (gameData: GameData) => {
   }
   return false;
 };
+
+export const whoWon = (address: `0x${string}`, gameData: GameData) => {
+  const { c1, c2, j1, j2 } = gameData;
+
+  if (c1 === c2) return "It's a Tie !";
+
+  //win will be true if c1 beats c2
+  const calcWin = () => {
+    if (c1 % 2 == c2 % 2) return c1 < c2;
+    else return c1 > c2;
+  };
+
+  const win = calcWin();
+
+  // c1 beats c2, and j1 is on page ,then show "You won" ===> win == true && j1 == address
+  if (j1 === address) {
+    if (win) return "You Won !";
+    return "You Lost !";
+  }
+
+  //opposite for j2
+  if (j2 === address) {
+    if (win) return "You Lost !";
+    return "You Won !";
+  }
+};

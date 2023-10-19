@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useContractReads, usePublicClient } from "wagmi";
 import { Move } from "../_types";
 import { decodeFunctionData } from "viem";
+import { hasJ1TimedOut, hasJ2TimedOut } from "../_utils/helpers";
 export interface GameData {
   gameAddress: `0x${string}` | undefined;
   j1: `0x${string}` | undefined;
@@ -86,8 +87,14 @@ export const useContract = (address: `0x${string}`) => {
   //this runs as soon as stake variable changes, and targets the block in which it changed, then i search for txns in that block
   // when found  decode the inpu
   useEffect(() => {
-    if (!hasGameEnded || hasJ1Revealed) return;
-    console.log("starting");
+    if (
+      hasJ1TimedOut(prettyData as GameData) ||
+      hasJ2TimedOut(prettyData as GameData) ||
+      !hasGameEnded ||
+      hasJ1Revealed
+    )
+      return;
+
     publicClient
       .getBlockNumber()
       .then((blockNumber) => {

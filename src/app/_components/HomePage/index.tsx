@@ -1,7 +1,7 @@
-import Image from "next/image";
 import React from "react";
 import CreateGame from "./CreateGame";
-import HowToPlay from "./HowToPlay";
+import dynamic from "next/dynamic";
+const HowToPlay = dynamic(() => import("./HowToPlay"));
 
 function HomePage() {
   return (

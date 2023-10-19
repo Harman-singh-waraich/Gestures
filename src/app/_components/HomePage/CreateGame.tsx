@@ -12,6 +12,7 @@ import React, {
   useState,
 } from "react";
 import { useAccount } from "wagmi";
+import MoveSelector from "../Shared/MoveSelector";
 
 interface FormData {
   move: Move;
@@ -32,12 +33,11 @@ function CreateGame() {
 
   //check for button state
   const isButtonDisabled = useMemo(() => {
-    console.log(isDisconnected, formData);
-
     if (isDisconnected) return true;
     if (
       formData.move === Move.Null ||
-      !isValidEthereumAddress(formData.partyAddress)
+      !isValidEthereumAddress(formData.partyAddress) ||
+      formData.stakeAmount === "0"
     )
       return true;
     if (deployState.isLoading) return true;
@@ -57,7 +57,8 @@ function CreateGame() {
     event.preventDefault();
     if (
       formData.move === Move.Null ||
-      !isValidEthereumAddress(formData.partyAddress)
+      !isValidEthereumAddress(formData.partyAddress) ||
+      formData.stakeAmount === "0"
     )
       return;
     deployContract!();
@@ -79,39 +80,13 @@ function CreateGame() {
           Pick your move
         </div>
 
-        <div className="flex flex-wrap gap-3 items-center">
-          {Object.keys(Move)
-            .filter((key: any) => isNaN(Number(Move[key])))
-
-            .map((key: any) => Move[key].toLowerCase())
-            .map(
-              (move, index) =>
-                index !== 0 && (
-                  <label key={index} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="move"
-                      value={index}
-                      checked={formData.move === index}
-                      onChange={handleChange}
-                      className="hidden"
-                    />
-                    <div
-                      className={` w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline  hover:bg-primary-content rounded-full border-2 relative ${
-                        formData.move === index ? "bg-secondary-content" : ""
-                      }`}
-                    >
-                      <Image
-                        src={`assets/${move}.svg`}
-                        alt={move}
-                        fill={true}
-                      />
-                    </div>
-                  </label>
-                )
-            )}
-        </div>
-
+        {/* selector */}
+        <MoveSelector
+          onChange={handleChange}
+          selectedMove={formData.move}
+          extendClass="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20"
+        />
+        {/* address input */}
         <div className="form-control w-full items-center">
           <label className="label">
             <span className="label-text text-gray-600">
@@ -127,6 +102,8 @@ function CreateGame() {
             className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-sm lg:max-w-md`}
           />
         </div>
+
+        {/* stake input */}
         <div className="form-control w-full items-center">
           <label className="label">
             <span className="label-text text-gray-600">Enter stake amount</span>

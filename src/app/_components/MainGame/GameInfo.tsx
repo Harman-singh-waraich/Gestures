@@ -22,9 +22,11 @@ const GameInfo = ({ gameData }: Props) => {
           Player 2 :- {j2}
         </div>
       </div>
-      <div className="text-secondary text-base md:text-xl">
-        Stake :- {formatEther(stake!)} ETH
-      </div>
+      {
+        <div className="text-secondary text-base md:text-xl">
+          Stake :- {stake ? formatEther(stake!) : 0} ETH
+        </div>
+      }
       <div className="flex flex-col items-center">
         <span className="text-gray-400 pb-1 text-sm">
           Share this link with the other party.

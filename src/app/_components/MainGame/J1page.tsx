@@ -2,16 +2,15 @@ import { gameAbi } from "@/app/_constants";
 import { GameData } from "@/app/_hooks/useContract";
 import { useTrackTransaction } from "@/app/_providers/TrackTxnProvider";
 import { Move } from "@/app/_types";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useContractWrite } from "wagmi";
-import TimeoutButton from "./TimoutButton";
 import { getJ1PlayedMove } from "@/app/_utils/secureHash";
-import Image from "next/image";
+import MoveIcon from "../Shared/MoveIcon";
 
 type Props = { gameData: GameData };
 
 const J1page = ({ gameData }: Props) => {
-  const { j1, j2, c1, c2, gameAddress, c1Hash } = gameData;
+  const { c1, c2, gameAddress, c1Hash } = gameData;
   const { trackTxn } = useTrackTransaction();
 
   const { write, isLoading } = useContractWrite({
@@ -19,8 +18,6 @@ const J1page = ({ gameData }: Props) => {
     abi: gameAbi,
     functionName: "solve",
     onSuccess(data) {
-      console.log(data?.hash);
-
       trackTxn(data?.hash);
     },
   });
@@ -38,41 +35,38 @@ const J1page = ({ gameData }: Props) => {
 
   return (
     <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between my-4">
+      {/* player 1 side */}
       <div className="flex flex-col gap-3 items-center border-b border-black md:border-none py-2">
         {isRevealed ? `You played ${Move[c1]}` : "You have played your move"}
-        <button
-          className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative "
+
+        <MoveIcon
+          moveType={isRevealed ? Move[c1].toLowerCase() : "question"}
           disabled={isDisabled || isRevealed}
           onClick={handleSubmit}
-        >
-          <Image
-            src={`/assets/${
-              isRevealed ? Move[c1].toLowerCase() : "question"
-            }.svg`}
-            alt={"move"}
-            fill={true}
-          />
-        </button>
+          extendClass=" bg-primary-content hover:bg-secondary-content"
+        />
+
         {!isDisabled && c1 === Move.Null && "Reveal your move now"}
       </div>
+
+      {/* player 2 side */}
       <div className="flex flex-col gap-3 items-center py-2">
         {c2 == Move.Null ? (
+          // opponent has not played yet
           <>
             <div className=" text-neutral">Waiting for opponent's move</div>
             <span className="loading loading-dots loading-md"></span>
           </>
         ) : (
+          //opponent played
           <div className="flex flex-col-reverse md:flex-col items-center gap-1">
             {" "}
             <span className="text-neutral">Opponent played {Move[c2]}</span>
-            <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
-              <Image
-                src={`/assets/${Move[c2].toLowerCase()}.svg`}
-                alt={Move[c2].toLowerCase()}
-                fill={true}
-              />
-            </span>
-            {isRevealed && c1 === Move.Null && (
+            <MoveIcon
+              moveType={Move[c2]}
+              extendClass=" bg-primary-content hover:bg-primary-content"
+            />
+            {!isRevealed && (
               <span className="text-neutral">
                 You have to reveal your move now.
               </span>

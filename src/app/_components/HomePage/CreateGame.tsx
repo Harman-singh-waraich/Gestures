@@ -60,9 +60,6 @@ function CreateGame() {
       !isValidEthereumAddress(formData.partyAddress)
     )
       return;
-    console.log("Move:", formData.move);
-    console.log("Ethereum Address:", formData.partyAddress);
-    console.log("stake:", formData.stakeAmount);
     deployContract!();
   };
 
@@ -76,9 +73,9 @@ function CreateGame() {
     <>
       <form
         onSubmit={handleSubmit}
-        className="w-full h-screen flex flex-col items-center  gap-5 pt-40"
+        className="w-full h-screen flex flex-col items-center  gap-5 pt-40 px-4"
       >
-        <div className="text-3xl md:text-6xl text-secondary font-medium my-3 text-center">
+        <div className="text-3xl md:text-4xl lg:text-6xl text-secondary font-medium my-3 text-center">
           Pick your move
         </div>
 
@@ -127,7 +124,7 @@ function CreateGame() {
             name="partyAddress"
             value={formData.partyAddress}
             onChange={handleChange}
-            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-md`}
+            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-sm lg:max-w-md`}
           />
         </div>
         <div className="form-control w-full items-center">
@@ -140,7 +137,7 @@ function CreateGame() {
             name="stakeAmount"
             value={formData.stakeAmount}
             onChange={handleChange}
-            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-md`}
+            className={`input input-bordered input-primary bg-transparent text-gray-600 w-full max-w-xs md:max-w-sm lg:max-w-md`}
           />
         </div>
 

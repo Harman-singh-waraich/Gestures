@@ -20,13 +20,16 @@ const CopyLinkButton: React.FC<CopyLinkButtonProps> = ({ link }) => {
   return (
     <div className="join">
       <input
-        className="join-item input input-bordered input-disabled focus:outline-none bg-transparent text-gray-600 max-w-xs md:max-w-md"
+        className="join-item input input-sm md:input-md input-bordered input-disabled focus:outline-none bg-transparent text-gray-600 max-w-xs md:max-w-md"
         id="linkInput"
         type="text"
         value={link}
         readOnly
       />
-      <button className="join-item btn btn-primary" onClick={handleCopy}>
+      <button
+        className="join-item btn btn-sm md:btn-md btn-primary"
+        onClick={handleCopy}
+      >
         {copied ? "Copied!" : "Copy"}
       </button>
     </div>

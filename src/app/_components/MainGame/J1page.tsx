@@ -11,9 +11,8 @@ import Image from "next/image";
 type Props = { gameData: GameData };
 
 const J1page = ({ gameData }: Props) => {
-  const { j1, j2, c2, gameAddress, c1Hash } = gameData;
+  const { j1, j2, c1, c2, gameAddress, c1Hash } = gameData;
   const { trackTxn } = useTrackTransaction();
-  const [c1, setC1] = useState<Move>(Move.Null);
 
   const { write, isLoading } = useContractWrite({
     address: gameAddress,
@@ -27,13 +26,10 @@ const J1page = ({ gameData }: Props) => {
   });
   const isDisabled = useMemo(() => c2 === Move.Null, [c2]);
   const isRevealed = useMemo(() => c1 !== Move.Null, [c1]);
-  console.log(c1, isRevealed);
 
   const handleSubmit = useCallback(async () => {
     const encryptedSalt = localStorage.getItem("encryptedSalt");
     const decrpytedValues = await getJ1PlayedMove(c1Hash, encryptedSalt!);
-
-    setC1(decrpytedValues?.move! as Move);
 
     write?.({
       args: [decrpytedValues?.move!, decrpytedValues?.salt! as bigint],
@@ -41,8 +37,8 @@ const J1page = ({ gameData }: Props) => {
   }, [c2]);
 
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-start md:justify-between my-4">
-      <div className="flex flex-col gap-3 items-center">
+    <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between my-4">
+      <div className="flex flex-col gap-3 items-center border-b border-black md:border-none py-2">
         {isRevealed ? `You played ${Move[c1]}` : "You have played your move"}
         <button
           className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative "
@@ -57,16 +53,16 @@ const J1page = ({ gameData }: Props) => {
             fill={true}
           />
         </button>
-        {!isDisabled && "Reveal your move now"}
+        {!isDisabled && c1 === Move.Null && "Reveal your move now"}
       </div>
-      <div className="flex flex-col gap-3 items-center">
+      <div className="flex flex-col gap-3 items-center py-2">
         {c2 == Move.Null ? (
           <>
             <div className=" text-neutral">Waiting for opponent's move</div>
             <span className="loading loading-dots loading-md"></span>
           </>
         ) : (
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex flex-col-reverse md:flex-col items-center gap-1">
             {" "}
             <span className="text-neutral">Opponent played {Move[c2]}</span>
             <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
@@ -76,7 +72,7 @@ const J1page = ({ gameData }: Props) => {
                 fill={true}
               />
             </span>
-            {isRevealed && (
+            {isRevealed && c1 === Move.Null && (
               <span className="text-neutral">
                 You have to reveal your move now.
               </span>

@@ -6,7 +6,7 @@ type Props = {};
 
 const Footer = (props: Props) => {
   return (
-    <footer className="footer items-center p-2 bg-gray-100 text-neutral fixed bottom-0 left-0">
+    <footer className="footer items-center p-2 bg-gray-100 text-neutral md:fixed bottom-0 left-0">
       <aside className="items-center grid-flow-col">
         <p>Made with ♡ by @turbancoder</p>
       </aside>

@@ -16,7 +16,7 @@ import { useContractWrite } from "wagmi";
 type Props = { gameData: GameData };
 
 const J2page = ({ gameData }: Props) => {
-  const { c2, gameAddress, stake } = gameData;
+  const { c1, c2, gameAddress, stake } = gameData;
   const [selectedMove, setMove] = useState<Move>(Move.Null);
   const { trackTxn } = useTrackTransaction();
 
@@ -61,8 +61,8 @@ const J2page = ({ gameData }: Props) => {
   );
 
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-start md:justify-between">
-      <div className="flex flex-col gap-3 items-center">
+    <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between">
+      <div className="flex flex-col gap-3 items-center border-b border-black md:border-none py-2">
         {c2 == Move.Null ? (
           <form
             className="flex flex-col gap-3 items-center"
@@ -122,14 +122,30 @@ const J2page = ({ gameData }: Props) => {
           </>
         )}
       </div>
-      <div className="flex flex-col gap-3 items-center">
+      <div className="flex flex-col gap-3 items-center py-2">
         {c2 == Move.Null ? (
-          <div>Opponent has played his move. Play yours now</div>
-        ) : (
+          <div className="text-neutral text-center">
+            Opponent has played his move. Play yours now
+          </div>
+        ) : c1 === Move.Null ? (
           <>
-            <div className=" text-neutral">Waiting for opponent's move</div>
+            <div className=" text-neutral text-center">
+              Waiting for opponent to reveal.
+            </div>
             <span className="loading loading-dots loading-md"></span>
           </>
+        ) : (
+          <div className="flex flex-col-reverse md:flex-col items-center gap-1">
+            {" "}
+            <span className="text-neutral">Opponent played {Move[c1]}</span>
+            <span className="w-12 h-12 md:w-14 md:h-14 lg:w-20 lg:h-20 btn btn-circle btn-outline bg-primary-content rounded-full border-2 relative ">
+              <Image
+                src={`/assets/${Move[c1].toLowerCase()}.svg`}
+                alt={Move[c1].toLowerCase()}
+                fill={true}
+              />
+            </span>
+          </div>
         )}
       </div>
     </div>

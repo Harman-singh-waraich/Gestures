@@ -5,6 +5,7 @@ import { Gluten } from "next/font/google";
 import { TrackTxnProvider } from "@/app/_providers/TrackTxnProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import Navbar from "../_components/Shared/Navbar";
 import Footer from "../_components/Shared/Footer";
 import Head from "next/head";

@@ -1,3 +1,4 @@
+"use client";
 import { gameAbi } from "@/app/_constants";
 import { useEffect, useMemo, useState } from "react";
 import { useContractReads, usePublicClient } from "wagmi";
@@ -24,7 +25,12 @@ export const useContract = (address: `0x${string}`) => {
     abi: gameAbi,
     address: address as `0x${string}`,
   };
-  const { data, isError, isLoading } = useContractReads({
+  const {
+    data,
+    isError,
+    isLoading,
+    refetch: refetchGameState,
+  } = useContractReads({
     contracts: [
       {
         ...gameContract,
@@ -77,10 +83,23 @@ export const useContract = (address: `0x${string}`) => {
     };
   }, [data, c1]);
 
-  const hasGameEnded = useMemo(
-    () => prettyData.stake === BigInt(0),
-    [prettyData.stake]
-  );
+  const hasGameEnded = useMemo(() => {
+    return prettyData.stake === BigInt(0);
+  }, [prettyData.stake]);
+
+  //check local storage if game ended
+  useEffect(() => {
+    const revealedMove = localStorage.getItem(`revealed-${address}`);
+
+    if (
+      revealedMove == "undefined" ||
+      revealedMove === null ||
+      parseInt(revealedMove) == Move.Null
+    )
+      return;
+
+    setC1(parseInt(revealedMove));
+  }, []);
 
   //since solve function does not have any event, i have to rely on the stake variable,
   //combined with quick thinking to get the c1,salt when its revealed
@@ -98,28 +117,40 @@ export const useContract = (address: `0x${string}`) => {
     publicClient
       .getBlockNumber()
       .then((blockNumber) => {
-        publicClient
-          .getBlock({ blockNumber: blockNumber, includeTransactions: true })
-          .then((block) => {
-            const txns = block.transactions;
-            for (let i = 0; txns.length; i++) {
-              if (
-                txns[i].from.toLowerCase() === prettyData.j1?.toLowerCase() &&
-                txns[i].to?.toLowerCase() === address.toLowerCase()
-              ) {
-                const { functionName, args } = decodeFunctionData({
-                  abi: gameAbi,
-                  data: txns[i].input,
-                });
+        //check at every 2 sec, since some tiimes the block is 404
+        const intervalId = setInterval(
+          () =>
+            publicClient
+              .getBlock({ blockNumber: blockNumber, includeTransactions: true })
+              .then((block) => {
+                const txns = block.transactions;
+                for (let i = 0; txns.length; i++) {
+                  if (
+                    txns[i].from.toLowerCase() ===
+                      prettyData.j1?.toLowerCase() &&
+                    txns[i].to?.toLowerCase() === address.toLowerCase()
+                  ) {
+                    const { functionName, args } = decodeFunctionData({
+                      abi: gameAbi,
+                      data: txns[i].input,
+                    });
 
-                setRevealFound(true);
-                setC1(args?.[0] as Move);
+                    setRevealFound(true);
+                    setC1(args?.[0] as Move);
+                    localStorage.setItem(
+                      `revealed-${address.toLowerCase()}`,
+                      `${args?.[0]}`
+                    );
 
-                break;
-              }
-            }
-          })
-          .catch((err) => {});
+                    //close interval
+                    clearInterval(intervalId);
+                    break;
+                  }
+                }
+              })
+              .catch((err) => {}),
+          2000
+        );
       })
       .catch((err) => {});
   }, [hasGameEnded]);
@@ -129,5 +160,6 @@ export const useContract = (address: `0x${string}`) => {
     isLoading,
     hasGameEnded,
     hasJ1Revealed,
+    refetchGameState,
   };
 };

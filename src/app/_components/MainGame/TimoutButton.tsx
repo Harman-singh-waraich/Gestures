@@ -2,18 +2,18 @@ import { gameAbi } from "@/app/_constants";
 import { GameData } from "@/app/_hooks/useContract";
 import { useTrackTransaction } from "@/app/_providers/TrackTxnProvider";
 import { hasJ1TimedOut, hasJ2TimedOut } from "@/app/_utils/helpers";
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import Countdown from "react-countdown";
 import { useAccount, useContractWrite } from "wagmi";
 
-type Props = { gameData: GameData };
+type Props = { gameData: GameData; onTimeout?: () => void };
 
-const TimeoutButton = ({ gameData }: Props) => {
+const TimeoutButton = ({ gameData, onTimeout }: Props) => {
   const { lastAction, TIMEOUT, j1, j2, gameAddress } = gameData;
   const { address } = useAccount();
   const { trackTxn, isTxnPending } = useTrackTransaction();
 
-  const timeLeft = (lastAction! + TIMEOUT!) * 1000 - Date.now();
+  const timeLeft = (lastAction! + TIMEOUT!) * 1000 - Date.now() + 10000; //give a buffer time, it takes time to settle txn in chain;
 
   const TimoutText = () => {
     if (address === j1) {
@@ -44,15 +44,12 @@ const TimeoutButton = ({ gameData }: Props) => {
     },
   });
 
-  const isDisabled = useMemo(
-    () =>
-      j1Loading ||
-      j2Loading ||
-      (address == j1 && hasJ1TimedOut(gameData)) ||
-      (address === j2 && hasJ2TimedOut(gameData)) ||
-      isTxnPending,
-    [j1Loading, j2Loading, gameData, address, isTxnPending]
-  );
+  const isDisabled =
+    j1Loading ||
+    j2Loading ||
+    (address == j1 && hasJ1TimedOut(gameData)) ||
+    (address === j2 && hasJ2TimedOut(gameData)) ||
+    isTxnPending;
 
   const handleSubmit = () => {
     if (timeLeft > 0) return;
@@ -65,6 +62,9 @@ const TimeoutButton = ({ gameData }: Props) => {
       <Countdown
         className="bg-secondary text-white p-2 rounded-lg"
         date={Date.now() + timeLeft}
+        onComplete={() => {
+          onTimeout!();
+        }}
       />
     );
   }

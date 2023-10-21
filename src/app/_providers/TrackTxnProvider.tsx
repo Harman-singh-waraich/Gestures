@@ -25,7 +25,7 @@ export const TrackTxnProvider: React.FC<TrackTxnProviderProps> = ({
   const trackTxn = (hash: Hash | undefined) => {
     setHash(hash);
 
-    toast.loading("Transacion Submitted!", toastConfig);
+    toast.loading("Transaction Submitted!", toastConfig);
   };
 
   const { isLoading: isTxnPending } = useWaitForTransaction({

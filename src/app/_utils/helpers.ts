@@ -15,9 +15,13 @@ export const hasJ2TimedOut = (gameData: GameData) => {
 };
 
 export const hasJ1TimedOut = (gameData: GameData) => {
-  const { c2, lastAction, TIMEOUT } = gameData;
+  const { c2, lastAction, TIMEOUT, c1 } = gameData;
 
-  if (c2 !== Move.Null && Date.now() / 1000 > lastAction! + TIMEOUT!) {
+  if (
+    c1 === Move.Null &&
+    c2 !== Move.Null &&
+    Date.now() / 1000 > lastAction! + TIMEOUT!
+  ) {
     return true;
   }
   return false;

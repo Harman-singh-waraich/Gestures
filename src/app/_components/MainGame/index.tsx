@@ -11,19 +11,23 @@ const Web3Button = dynamic(() => import("../Shared/Web3Button"));
 const TimeoutButton = dynamic(() => import("./TimoutButton"));
 import Link from "next/link";
 import { Move } from "@/app/_types";
-import { whoWon } from "@/app/_utils/helpers";
+import { hasJ1TimedOut, hasJ2TimedOut, whoWon } from "@/app/_utils/helpers";
 
 interface Props {
   address: string;
 }
 
 const MainGame = ({ address: gameAddress }: Props) => {
-  const { gameData, isLoading, hasGameEnded } = useContract(
+  const { gameData, isLoading, hasGameEnded, refetchGameState } = useContract(
     gameAddress! as `0x${string}`
   );
   const { address: account, isDisconnected } = useAccount();
 
   const isMounted = useIsMounted();
+  const showPlayAgain =
+    hasGameEnded ||
+    (account === gameData.j1 && hasJ1TimedOut(gameData)) ||
+    (account === gameData.j2 && hasJ2TimedOut(gameData));
 
   if (!isMounted || isLoading) {
     return (
@@ -54,12 +58,12 @@ const MainGame = ({ address: gameAddress }: Props) => {
       ) : (
         <div>Your not a part of the game</div>
       )}
-      {hasGameEnded ? (
+      {showPlayAgain ? (
         <Link href="/" className="btn btn-accent">
           Play Again !
         </Link>
       ) : (
-        <TimeoutButton gameData={gameData} />
+        <TimeoutButton gameData={gameData} onTimeout={refetchGameState} />
       )}
     </div>
   );

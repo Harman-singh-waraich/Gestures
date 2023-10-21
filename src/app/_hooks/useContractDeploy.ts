@@ -80,7 +80,7 @@ export function useGameDeploy(params: GameConstructorArgs) {
 
   useWaitForTransaction({
     hash: deployState.hash,
-    onSettled: (data, error) => {
+    onSuccess: (data) => {
       setDeployState({
         ...deployState,
         hash: undefined,
@@ -89,6 +89,20 @@ export function useGameDeploy(params: GameConstructorArgs) {
         isLoading: false,
         contractAddress: data?.contractAddress!,
         error: null,
+      });
+    },
+    onError(err) {
+      console.log(err);
+
+      setDeployState({
+        ...deployState,
+        hash: undefined,
+        isSuccess: false,
+        isError: true,
+        status: "error",
+        isLoading: false,
+        contractAddress: null,
+        error: err.message,
       });
     },
   });

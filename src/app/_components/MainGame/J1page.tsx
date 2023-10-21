@@ -34,7 +34,7 @@ const J1page = ({ gameData }: Props) => {
   }, [c2]);
 
   return (
-    <div className="w-full flex flex-col gap-4 md:flex-row items-center justify-start md:justify-between my-4">
+    <div className="w-full flex flex-col gap-4 md:flex-row items-start justify-start md:justify-between my-4">
       {/* player 1 side */}
       <div className="flex flex-col gap-4 items-center border-b border-black md:border-none py-2">
         {isRevealed ? `You played ${Move[c1]}` : "You have played your move"}

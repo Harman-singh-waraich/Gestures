@@ -7,6 +7,7 @@ import getConfig from "./useConfig";
 
 interface TrackContextType {
   trackTxn: (hash: Hash | undefined) => void;
+  isTxnPending: boolean;
 }
 
 interface TrackTxnProviderProps {
@@ -27,7 +28,7 @@ export const TrackTxnProvider: React.FC<TrackTxnProviderProps> = ({
     toast.loading("Transacion Submitted!", toastConfig);
   };
 
-  useWaitForTransaction({
+  const { isLoading: isTxnPending } = useWaitForTransaction({
     hash: hash,
     onError(err) {
       toast.dismiss();
@@ -42,7 +43,7 @@ export const TrackTxnProvider: React.FC<TrackTxnProviderProps> = ({
   });
 
   return (
-    <TrackContext.Provider value={{ trackTxn }}>
+    <TrackContext.Provider value={{ trackTxn, isTxnPending }}>
       {children}
     </TrackContext.Provider>
   );
